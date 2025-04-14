@@ -36,6 +36,6 @@
     <button type="submit">Register</button>
 </form>
 
-<a href="/login">Back to Login</a>
+<a href="<c:url value='/login'/>">Back to Login</a>
 </body>
 </html>
