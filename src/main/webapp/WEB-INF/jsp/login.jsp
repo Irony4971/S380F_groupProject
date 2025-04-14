@@ -21,6 +21,7 @@
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     <input type="submit" value="Log In"/>
 </form>
+<a href="<c:url value='/register'/>">Register</a><br/>
 <a href="<c:url value='/course380F'/>" class="btn-visitor">Enter as Visitor</a>
 </body>
 </html>

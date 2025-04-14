@@ -50,7 +50,11 @@
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
 </security:authorize>
-
+<security:authorize access="hasRole('STUDENT')">
+    <c:if test="${not empty pageContext.request.userPrincipal}">
+        <a href="<c:url value='/updateProfile'/>">My Profile</a>
+    </c:if>
+</security:authorize>
 <security:authorize access="hasRole('GUEST')">
     <a href="/project/login">Login for Full Access</a>
 </security:authorize>

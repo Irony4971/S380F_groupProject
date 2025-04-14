@@ -28,8 +28,8 @@ public class UserManagementService {
     }
 
     @Transactional
-    public void createLectureNoteUser(String username, String password, String[] roles) {
-        LectureNoteUser user = new LectureNoteUser(username, password, roles);
+    public void createLectureNoteUser(String username, String password, String[] roles, String fullName, String email, String phone) {
+        LectureNoteUser user = new LectureNoteUser(username, password, roles ,fullName, email, phone);
         tuRepo.save(user);
     }
 }

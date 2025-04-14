@@ -16,7 +16,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login","/login/**","/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/login","/register","/login/**","/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         .requestMatchers("/WEB-INF/jsp/**").permitAll()
                         .requestMatchers("/course380F").permitAll()
                         .requestMatchers("/course380F/lecture/**").hasAnyRole("STUDENT", "TEACHER")
@@ -24,6 +24,7 @@ public class SecurityConfig {
                         .requestMatchers(RegexRequestMatcher.regexMatcher("/course380F/lecture/[0-9]+/delete/[0-9]+")).hasRole("TEACHER")
                         .requestMatchers(RegexRequestMatcher.regexMatcher("/course380F/lecture/[0-9]+/create/[0-9]+")).hasRole("TEACHER")
                         .requestMatchers(RegexRequestMatcher.regexMatcher("/course380F/lecture/[0-9]+/edit/[0-9]+")).hasRole("TEACHER")
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -33,7 +34,7 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()

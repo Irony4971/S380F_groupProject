@@ -1,7 +1,6 @@
 package groupProject.controller;
 
 import groupProject.dao.UserManagementService;
-import groupProject.dao.UserManagementService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -29,6 +28,10 @@ public class UserManagementController {
         private String username;
         private String password;
         private String[] roles;
+        private String fullName;
+        private String email;
+        private String phone;
+
 
         // getters and setters for all properties
         public String getUsername() {
@@ -54,6 +57,30 @@ public class UserManagementController {
         public void setRoles(String[] roles) {
             this.roles = roles;
         }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getFullName() {
+            return fullName;
+        }
+
+        public void setFullName(String fullName) {
+            this.fullName = fullName;
+        }
+
+        public String getPhone() {
+            return phone;
+        }
+
+        public void setPhone(String phone) {
+            this.phone = phone;
+        }
     }
 
     @GetMapping("/create")
@@ -63,13 +90,13 @@ public class UserManagementController {
 
     @PostMapping("/create")
     public String create(Form form) throws IOException {
-        umService.createLectureNoteUser(form.getUsername(),
-                form.getPassword(), form.getRoles());
-        return "redirect:/user/list";
+        umService.createLectureNoteUser(form.getUsername(), form.getPassword(), form.getRoles(),form.getFullName(),
+                form.getEmail(),form.getPhone());
+        return "redirect:/user";
     }
     @GetMapping("/delete/{username}")
     public String deleteLectureNote(@PathVariable("username") String username) {
         umService.delete(username);
-        return "redirect:/user/list";
+        return "redirect:/user";
     }
 }
