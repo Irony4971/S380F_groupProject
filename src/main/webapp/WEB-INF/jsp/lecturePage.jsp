@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,55 +15,92 @@
     <h2>Lecture Notes</h2>
 
     <c:choose>
-        <c:when test="${empty lecturePage.lectureNotes}">
-            <p>No notes available</p>
-        </c:when>
-        <c:otherwise>
-            <c:forEach items="${lecturePage.lectureNotes}" var="note">
-                <div class="note-container">
-                        <c:if test="${not empty note.courseMaterials}">
-                            <div class="materials-section">
-                                <c:forEach items="${note.courseMaterials}" var="material">
-                                    <div class="material-item">
-                                        <a href="<c:url value="/course380F/lecture/${lecturePage.id}/material/${material.id}"/>">
-                                            <c:out value="${material.name}"/>
-                                        </a>
-                                        <span>by <c:out value="${note.userName}"/></span>
-                                    </div>
-                                </c:forEach>
-                            </div>
-                        </c:if>
+    <c:when test="${empty lecturePage.lectureNotes}">
+        <p>No notes available</p>
+    </c:when>
+    <c:otherwise>
+    <c:forEach items="${lecturePage.lectureNotes}" var="note">
+    <div class="note-container">
+        <c:if test="${not empty note.courseMaterials}">
+            <div class="materials-section">
+                <c:forEach items="${note.courseMaterials}" var="material">
+                    <div class="material-item">
+                        <a href="<c:url value="/course380F/lecture/${lecturePage.id}/material/${material.id}"/>">
+                            <c:out value="${material.name}"/>
+                        </a>
+                        <span>by <c:out value="${note.userName}"/></span>
                     </div>
-
-                    <div class="note-actions">
-                        <security:authorize access="hasRole('TEACHER') or principal.username=='${note.userName}'">
-                            <a href="<c:url value="/course380F/lecture/${lecturePage.id}/edit/${note.id}"/>"
-                               class="btn btn-edit">Edit</a>
-                            <form:form action="/project/course380F/lecture/${lecturePage.id}/delete/${note.id}"
-                                       method="post"
-                                       style="display:inline;">
-                                <input type="submit" value="Delete"
-                                       class="btn btn-delete"/>
-                                <input type="hidden" name="${_csrf.parameterName}"
-                                       value="${_csrf.token}"/>
-                            </form:form>
-                        </security:authorize>
-                    </div>
-                </div>
-            </c:forEach>
-
-        </c:otherwise>
-    </c:choose>
-
-    <div style="margin-top: 30px;">
-        <a href="<c:url value="/course380F" />">Return to Main Page</a>
+                </c:forEach>
+            </div>
+        </c:if>
     </div>
 
-    <c:url var="logoutUrl" value="/logout"/>
-    <form action="${logoutUrl}" method="post" style="margin-top:20px;">
-        <input type="submit" value="Log out" class="action-btn delete-btn"/>
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-    </form>
+    <div class="note-actions">
+        <security:authorize access="hasRole('TEACHER') or principal.username=='${note.userName}'">
+            <a href="<c:url value="/course380F/lecture/${lecturePage.id}/edit/${note.id}"/>"
+               class="btn btn-edit">Edit</a>
+            <form:form action="/project/course380F/lecture/${lecturePage.id}/delete/${note.id}"
+                       method="post"
+                       style="display:inline;">
+                <input type="submit" value="Delete"
+                       class="btn btn-delete"/>
+                <input type="hidden" name="${_csrf.parameterName}"
+                       value="${_csrf.token}"/>
+            </form:form>
+        </security:authorize>
+    </div>
+</div>
+</c:forEach>
+
+</c:otherwise>
+</c:choose>
+
+<h2>Comments</h2>
+<c:if test="${fn:length(comments) == 0}">
+    <p>No comments yet.</p>
+</c:if>
+<c:if test="${fn:length(comments) > 0}">
+    <div class="comment-container">
+        <c:forEach var="comment" items="${comments}">
+            <div class="comment-item">
+                <div class="comment-header">
+                    <span class="comment-author">${comment.username}</span>
+                    <span class="comment-date">
+                        (<fmt:formatDate value="${comment.date}" pattern="yyyy-MM-dd HH:mm"/>)
+                    </span>
+                </div>
+                <div class="comment-content">
+                    <c:out value="${comment.content}" escapeXml="true"/>
+                </div>
+                <div class="comment-actions">
+                    <security:authorize access="hasRole('TEACHER')">
+                        <a href="<c:url value='/course380F/lecture/${lecturePage.id}/editComment/${comment.id}'/>"
+                           class="btn-edit">Edit</a>
+                        <form method="post"
+                                   action="<c:url value='/course380F/lecture/${lecturePage.id}/deleteComment/${comment.id}'/>"
+                                   style="display:inline;">
+                            <input type="submit" value="Delete" class="btn-delete"
+                                   onclick="return confirm('Are you sure you want to delete this comment?')"/>
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        </form>
+                    </security:authorize>
+                </div>
+            </div>
+        </c:forEach>
+    </div>
+</c:if>
+
+<p><a href="<c:url value="/course380F/lecture/${lecturePage.id}/addComment" />" class="btn-add">Add Comment</a></p>
+
+<div style="margin-top: 30px;">
+    <a href="<c:url value="/course380F" />">Return to Main Page</a>
+</div>
+
+<c:url var="logoutUrl" value="/logout"/>
+<form action="${logoutUrl}" method="post" style="margin-top:20px;">
+    <input type="submit" value="Log out" class="action-btn delete-btn"/>
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+</form>
 </div>
 </body>
 </html>

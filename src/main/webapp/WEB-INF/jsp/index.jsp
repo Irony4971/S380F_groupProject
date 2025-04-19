@@ -1,4 +1,4 @@
-<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+
 <!DOCTYPE html>
 <head>
     <title>Main Page</title>
@@ -44,6 +44,7 @@
 </c:choose>
 
 <security:authorize access="!hasRole('GUEST')">
+    <a href="<c:url value='/course380F/user/comments'/>">My Comment History</a>
     <c:url var="logoutUrl" value="/logout"/>
     <form action="${logoutUrl}" method="post">
         <input type="submit" value="Log out" />

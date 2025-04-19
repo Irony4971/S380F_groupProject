@@ -38,3 +38,14 @@ CREATE TABLE IF NOT EXISTS user_roles (
     PRIMARY KEY (user_role_id),
     FOREIGN KEY (username) REFERENCES users(username)
     );
+CREATE TABLE IF NOT EXISTS comments (
+    id BIGINT GENERATED ALWAYS AS IDENTITY,
+    date TIMESTAMP,
+    content VARCHAR(255),
+    username VARCHAR(50) NOT NULL,
+    lecture_page_id BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (lecture_page_id) REFERENCES lecture_page(id),
+    FOREIGN KEY (username) REFERENCES users(username)
+    );
+

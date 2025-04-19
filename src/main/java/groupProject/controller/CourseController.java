@@ -1,10 +1,17 @@
 package groupProject.controller;
 
-import groupProject.dao.LecturePageService;
+import groupProject.dao.CommentRepository;
 import groupProject.dao.LectureNoteService;
-import groupProject.exception.*;
-import groupProject.model.*;
+import groupProject.dao.LecturePageService;
+import groupProject.exception.CourseMaterialNotFound;
+import groupProject.exception.LectureNoteNotFound;
+import groupProject.exception.LecturePageNotFound;
+import groupProject.model.Comment;
+import groupProject.model.CourseMaterial;
+import groupProject.model.LectureNote;
+import groupProject.model.LecturePage;
 import groupProject.view.DownloadingView;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
@@ -14,12 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
-import jakarta.annotation.Resource;
-
 
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +38,9 @@ public class CourseController {
 
     @Resource
     private LectureNoteService lectureNoteService;
+
+    @Resource
+    private CommentRepository commentRepo;
 
     @GetMapping("")
     public String index(ModelMap model, Principal principal) {
@@ -62,7 +71,9 @@ public class CourseController {
     public String LecturePage(@PathVariable Long pageId, ModelMap model)
             throws LecturePageNotFound {
         LecturePage lecturePage = lecturePageService.getLecturePageWithNotes(pageId);
+        List<Comment> comments = commentRepo.findByLecturePageId(pageId);
         model.addAttribute("lecturePage", lecturePage);
+        model.addAttribute("comments", comments);
         return "lecturePage";
     }
 
@@ -187,4 +198,88 @@ public class CourseController {
     public ModelAndView error(Exception e) {
         return new ModelAndView("error", "message", e.getMessage());
     }
+
+    @GetMapping("/lecture/{pageId}/addComment")
+    public ModelAndView showAddCommentForm(@PathVariable Long pageId,
+                                           Principal principal) throws LecturePageNotFound {
+        ModelAndView model = new ModelAndView("addComment");
+        model.addObject("pageId", pageId);
+        model.addObject("comment", new Comment());
+        return model;
+    }
+
+    @GetMapping("/lecture/{pageId}/editComment/{commentId}")
+    public ModelAndView showEditCommentForm(@PathVariable Long pageId,
+                                            @PathVariable Long commentId,
+                                            Principal principal,
+                                            HttpServletRequest request) {
+        Comment comment = commentRepo.findById(commentId).orElse(null);
+
+        if (comment == null || (!request.isUserInRole("ROLE_TEACHER")
+                && !principal.getName().equals(comment.getUsername()))) {
+            return new ModelAndView("redirect:/course380F/lecture/" + pageId);
+        }
+
+        ModelAndView model = new ModelAndView("editComment");
+        model.addObject("comment", comment);
+        model.addObject("pageId", pageId);
+        return model;
+    }
+
+    @PostMapping("/lecture/{pageId}/addComment")
+    public String AddComment(@PathVariable Long pageId,
+                             @ModelAttribute("comment") Comment comment,
+                             Principal principal) throws LecturePageNotFound {
+        comment.setUsername(principal.getName());
+        comment.setDate(new Date());
+        comment.setLecturePage(lecturePageService.getLecturePageWithNotes(pageId));
+        commentRepo.save(comment);
+        return "redirect:/course380F/lecture/" + pageId;
+    }
+
+    @PostMapping("/lecture/{pageId}/editComment/{commentId}")
+    public String updateComment(@PathVariable Long pageId,
+                                @PathVariable Long commentId,
+                                @RequestParam String content,
+                                Principal principal,
+                                HttpServletRequest request) {
+        Comment comment = commentRepo.findById(commentId).orElse(null);
+
+        if (comment == null || (!request.isUserInRole("ROLE_TEACHER")
+                && !principal.getName().equals(comment.getUsername()))) {
+            return "redirect:/course380F/lecture/" + pageId;
+        }
+
+        comment.setContent(content);
+        comment.setDate(new Date());
+        commentRepo.save(comment);
+
+        return "redirect:/course380F/lecture/" + pageId;
+    }
+
+    @PostMapping("/lecture/{pageId}/deleteComment/{commentId}")
+    public String deleteComment(@PathVariable Long pageId,
+                                @PathVariable Long commentId,
+                                Principal principal,
+                                HttpServletRequest request) {
+        Comment comment = commentRepo.findById(commentId).orElse(null);
+
+        if (comment == null || (!request.isUserInRole("ROLE_TEACHER")
+                && !principal.getName().equals(comment.getUsername()))) {
+            return "redirect:/course380F/lecture/" + pageId;
+        }
+
+        commentRepo.deleteById(commentId);
+        return "redirect:/course380F/lecture/" + pageId;
+    }
+
+    @GetMapping("/user/comments")
+    public String getUserComments(ModelMap model, Principal principal) {
+        String username = principal.getName();
+        List<Comment> comments = commentRepo.findByUsernameOrderByDateDesc(username);
+        model.addAttribute("comments", comments);
+        return "commentHistory";
+    }
+
+
 }

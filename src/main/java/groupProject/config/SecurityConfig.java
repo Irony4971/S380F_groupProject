@@ -7,8 +7,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -19,7 +17,7 @@ public class SecurityConfig {
                         .requestMatchers("/login","/register","/login/**","/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         .requestMatchers("/WEB-INF/jsp/**").permitAll()
                         .requestMatchers("/course380F").permitAll()
-                        .requestMatchers("/course380F/lecture/**").hasAnyRole("STUDENT", "TEACHER")
+                        .requestMatchers("/course380F/lecture/**").authenticated()
                         .requestMatchers("/course380F/createPage/**","/user/**","/delete/**").hasRole("TEACHER")
                         .requestMatchers(RegexRequestMatcher.regexMatcher("/course380F/lecture/[0-9]+/delete/[0-9]+")).hasRole("TEACHER")
                         .requestMatchers(RegexRequestMatcher.regexMatcher("/course380F/lecture/[0-9]+/create/[0-9]+")).hasRole("TEACHER")
@@ -46,8 +44,7 @@ public class SecurityConfig {
                 .anonymous(anonymous -> anonymous
                         .principal("guest")
                         .authorities("ROLE_GUEST")
-                )
-                .httpBasic(withDefaults());
+                );
         return http.build();
     }
 }
