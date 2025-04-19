@@ -3,3 +3,72 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title><c:if test="${not empty pageTitle}">${pageTitle} - </c:if>Course System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .form-control {
+            width: 80%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn-submit {
+            background: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background: #9E9E9E;
+            color: white;
+            padding: 9px 18px;
+            margin-left: 10px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .file-input::file-selector-button {
+            background: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .existing-files li {
+            margin: 5px 0;
+            padding: 5px;
+            background: #f5f5f5;
+            list-style-type: none;
+        }
+    </style>
+</head>
